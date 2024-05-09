@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Sign in</h1>
+<!-- action указывает куда необходимо отправлять данные введенные в форму -->
+<!-- если он не указан, то данные будут отправлены по тому же адресу с помощью которого форма была отображена -->
+<!-- method
+post - данные будут отправлены в теле запроса
+get - данные будут отправлены в url-адресе, загромождая адресную строку
+-->
+<!-- novalidate - не проверять поля формы браузером,
+т.е. проверка будет выполнена за счет средств flask, для тестирования -->
+<form action="" method="post" novalidate>
+  {{ form.hidden_tag() }}  <!-- генерирует скрытое поле, для защиты от CSRF-атак с использованием SECRET_KEY -->
+  <p>
+    {{ form.username.label }}<br>
+    {{ form.username(size=32) }}
+  </p>
+  <p>
+    {{ form.password.label }}<br>
+    {{ form.password(size=32) }}
+  </p>
+  <p>{{ form.remember_me() }} {{ form.remember_me.label }}</p>
+  <p>{{ form.submit() }}</p>
+</form>
+{% endblock %}
