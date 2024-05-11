@@ -3,9 +3,19 @@ from typing import Optional
 from sqlalchemy import String, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, WriteOnlyMapped, relationship
 from app import db
+from werkzeug.security import generate_password_hash, check_password_hash
+from flask_login import UserMixin
+from app import login
 
 
-class User(db.Model):
+# загрузчик пользователя проверяет наличие пользователя с указанным id в БД для обеспечения работы flask-login
+@login.user_loader
+def load_user(id):
+    return db.session.get(User, int(id))
+
+
+# UserMixin добавление специальных методов в класс пользователя для обеспечения работы flask-login
+class User(UserMixin, db.Model):
     # для задания имени таблицы вручную, иначе оно будет сгенерировано автоматич. на основе имени класса в шнейк-кейсе
     # tablename = 'users'
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -17,6 +27,12 @@ class User(db.Model):
 
     def __repr__(self):  # метод класса, определяющий каким образом отображать значения экземпляров класса при их выводе
         return f'<User {self.username}>'
+
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
 
 
 class Post(db.Model):
@@ -61,7 +77,8 @@ for u in users:
 # get all posts wtitten by a user
 u = db.session.get(User, 1)  # получить запись пользователя по id
 q = u.posts.select()  # id всех постов пользователя
-p = db.session.scalars(q).all()  # получить записи постов из таблицы post
+p = db.session.scalars(q).all()  # получить все записи постов из таблицы post
+p = db.session.scalars(q).first()  # получить первую запись из таблицы post
 
 # print post author and body for all posts
 q = select(Post)
@@ -76,5 +93,8 @@ db.session.scalars(q).all()
 # get all users that have usernames starting with "s"
 q = select(User).where(User.username.like('s%'))
 db.session.scalars(q).all()
+
+q = select(User).where(User.username == 'john')
+db.session.scalar(q)  # вернет одну запись, если она есть, иначе None
  
 '''
