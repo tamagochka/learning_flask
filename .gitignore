@@ -1,3 +1,6 @@
 .venv/
 .idea/
 /app.db
+
+/logs/
+/logs/app.log
