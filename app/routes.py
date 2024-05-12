@@ -78,3 +78,14 @@ def register():
         return redirect(url_for('login'))
     return render_template('register.html', title='Register', form=form)
 
+
+@app.route('/user/<username>')  # значение указанное вместо <username> будет передано в функцию в качестве параметра
+@login_required
+def user(username):  # страница профиля пользователя
+    # если пользователя нет, то клиенту будет отправлена ошибка 404
+    user = db.first_or_404(select(User).where(User.username == username))
+    posts = [
+        {'author': user, 'body': 'Test post #1'},
+        {'author': user, 'body': 'Test post #2'}
+    ]
+    return render_template('user.html', user=user, posts=posts)
