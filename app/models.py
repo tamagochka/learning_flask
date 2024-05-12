@@ -24,6 +24,8 @@ class User(UserMixin, db.Model):
     password_hash: Mapped[Optional[str]] = mapped_column(String(256))
     # не создается фактически в БД, а является высокоуровневым представлением связи между таблицами
     posts: WriteOnlyMapped['Post'] = relationship(back_populates='author')
+    about_me: Mapped[Optional[str]] = mapped_column(String(140))
+    last_seen: Mapped[Optional[datetime]] = mapped_column(default=lambda: datetime.now(timezone.utc))
 
     def __repr__(self):  # метод класса, определяющий каким образом отображать значения экземпляров класса при их выводе
         return f'<User {self.username}>'
