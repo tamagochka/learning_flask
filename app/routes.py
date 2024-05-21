@@ -157,3 +157,13 @@ def unfollow(username):
     else:
         return redirect(url_for('index'))
 
+
+@app.route('/explore')
+@login_required
+def explore():
+    query = select(Post).order_by(Post.timestamp.desc())
+    posts = db.session.scalars(query).all()
+    # т.к. страница выглядит точно также, как и домашняя, то используем тот же шаблон index.html,
+    # только не передаем ему форму
+    return render_template('index.html', title='Explore', posts=posts)
+
