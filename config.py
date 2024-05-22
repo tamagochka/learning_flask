@@ -18,4 +18,4 @@ class Config:
     MAIL_PASSWORD = os.getenv('MAIL_PASSWORD')
     ADMINS = ['admin@example.com']  # на какие адреса рассылать сообщения об ошибках
 
-    POSTS_PER_PAGE = 3
+    POSTS_PER_PAGE = 25
