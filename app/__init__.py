@@ -1,6 +1,5 @@
 import os.path
-
-from flask import Flask
+from flask import Flask, request
 from config import Config
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
@@ -9,6 +8,14 @@ import logging
 from logging.handlers import SMTPHandler, RotatingFileHandler
 from flask_mail import Mail
 from flask_moment import Moment
+from flask_babel import Babel
+from flask_babel import lazy_gettext as _l  # отложенный перевод текста интерфейса
+
+
+def get_locale():
+    # получить из заголовка запроса предпочитаемый язык
+    return request.accept_languages.best_match(app.config['LANGUAGES'])
+
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -16,6 +23,8 @@ app.config.from_object(Config)
 login = LoginManager(app)
 # редиректить пользователя на страницу логина, при попытке анонимно зайти на защищенную страницу
 login.login_view = 'login'
+# переопределяем сообщение при логине пользователя для того, чтобы его можно было переводить
+login.login_message = _l('Please log in to access this page.')
 
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
@@ -52,5 +61,7 @@ if not app.debug:  # настройка почты для отправки со�
 mail = Mail(app)
 
 moment = Moment(app)
+
+babel = Babel(app, locale_selector=get_locale)
 
 from app import routes, models, errors

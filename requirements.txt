@@ -8,3 +8,4 @@ aiosmtpd
 flask-mail
 pyjwt
 flask-moment
+flask-babel
